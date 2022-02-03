@@ -42,24 +42,25 @@ rsdt <- function(mu_s, sig_s, n, lambda=NULL, calc_rates=F){
 
 # visualize signal detection theory distributions
 vis_dists <- function(mu_s, sig_s, lambda, return_plot=F){
-  range <- c(-5, mu_s+5)
-  x <- seq(range[1],range[2],by=.01)
-  d <- tibble(
+  range <- c(-5, mu_s+5) # range of x axis. # semi-arbitrary
+  x <- seq(range[1],range[2],by=.01) # x axis points
+  d <- tibble( # get density for noise and signal
     x=x,
     noise=dnorm(x,0,1),
     signal=dnorm(x,mu_s,sig_s)
   ) %>%
-    pivot_longer(cols=c(signal,noise),
+    pivot_longer(cols=c(signal,noise), # pivoting data for easier plotting
                  names_to="distribution",
                  values_to="density") %>%
     mutate(distribution=factor(distribution,levels=c("signal","noise")))
   pl <- ggplot(d, aes(x,density,col=distribution))+
-    geom_line(size=1.25)+
+    geom_line(size=1.25,alpha=.55)+
     geom_vline(xintercept=lambda,col='black',linetype='dashed')+
     scale_color_manual(values=c("green4","red2"))+
     scale_x_continuous(limits=c(range[1],range[2]))+
-    labs(y="probability density")+
-    ggthemes::theme_few()
+    labs(y="probability density",title="signal detection distributions")+
+    ggthemes::theme_few()+
+    theme(plot.title=element_text(hjust=0.5))
   if(return_plot){
     return(pl)
   }else{
@@ -77,8 +78,9 @@ vis_draws <- function(mu_s,sig_s,n,lambda=NULL,calc_rates=F,return_plot=F){
                  names_to="trial")  %>%
     mutate(trial=factor(trial,levels=c("signal","noise")))
   pl <- ggplot(draws,aes(x,fill=trial))+
-    geom_histogram(binwidth=.25,alpha=.55)+
+    geom_histogram(binwidth=.25,alpha=.55,boundary=-5)+
     facet_grid(trial~.)+
+    scale_x_continuous(limits=c(-5,mu_s+5))+
     scale_fill_manual(values=c("green4","red2"))+
     labs(title=glue("N={n} trials"))+
     ggthemes::theme_few()+
@@ -97,7 +99,7 @@ vis_draws <- function(mu_s,sig_s,n,lambda=NULL,calc_rates=F,return_plot=F){
   if(return_plot){
     return(pl)
   }else{
-    pl
+    suppressMessages(pl)
   }
 }
 
