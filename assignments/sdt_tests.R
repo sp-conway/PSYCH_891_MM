@@ -11,7 +11,7 @@ rm(list=ls())
 library(here)
 
 # source sdt functions
-source(here("sdt","sdt_dp_functions.R"))
+source(here("assignments","sdt_dp_functions.R"))
 
 # sdt parameters ( noise ~ N(0,1) )
 #mu_s <- 1
@@ -35,15 +35,15 @@ source(here("sdt","sdt_dp_functions.R"))
 #draws_pl/dists_pl
 
 # SDT ROC ===================================================================================
-n <- 10000
-mu_s <- 2
-sig_s <- .5
+n <- 100
+mu_s <- 1
+sig_s <- 1
 crit <- c(.5,.75,1,1.25,1.5)
-rsdt_roc(n, mu_s, sig_s, crit, show_plots=T) 
+res <- rsdt_roc(n, mu_s, sig_s, crit, show_plots=F) 
 sdt_plot <- rsdt_roc(n, mu_s, sig_s, crit = crit, show_plots=T)[[2]]
 
 # DP ROC ====================================================================================
-R <- .5 # probability of recollecting
+R <- .4 # probability of recollecting
 rdp_roc(n, mu_s, R, crit, show_plots=F) 
 dp_plot <- rdp_roc(n, mu_s, R, crit, show_plots=T)[[2]]
 sdt_plot/dp_plot

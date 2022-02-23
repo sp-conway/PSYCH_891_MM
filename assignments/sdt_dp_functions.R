@@ -133,7 +133,14 @@ plot_roc <- function(dat, ztrans=F, title=""){
 
 # draw from equal variance SDT model and plot ROC, ZROC
 rsdt_roc <- function(n, mu_s, sig_s, crit, show_plots=F){
-  dat <- map_dfr(crit, ~rsdt(n, mu_s, sig_s, .x, T)[[2]]) 
+  trials <- rsdt(n, mu_s, sig_s, .x, F)
+  hr <- map_dbl(crit, ~sum(trials$xs>.x)/n)
+  far <- map_dbl(crit, ~sum(trials$xn>.x)/n)
+  dat <- tibble(
+    crit=crit,
+    hr=hr,
+    far=far
+  )
   if(show_plots){
     roc <- plot_roc(dat, ztrans=F, "SDT ROC")
     zroc <- plot_roc(dat, ztrans=T, "SDT zROC")
@@ -150,10 +157,9 @@ rsdt_roc <- function(n, mu_s, sig_s, crit, show_plots=F){
 rdp_roc <- function(n, mu_s, R, crit, show_plots=F){
   sig_s <- 1
   rec <- sample(x=c(0,1),size=n,prob=c(1-R, R),replace=T)
-  xs <- rnorm(n, mu_s, sig_s)
-  xn <- rnorm(n)
-  hr <- map_dbl(crit, ~sum(xs>.x|rec==1)/n)
-  far <- map_dbl(crit, ~sum(xn>.x)/n)
+  trials <- rsdt(n, mu_s, sig_s, .x, F)
+  hr <- map_dbl(crit, ~sum(trials$xs>.x|rec==1)/n)
+  far <- map_dbl(crit, ~sum(trials$xn>.x)/n)
   dat <- tibble(
     crit=crit,
     hr=hr,
@@ -164,7 +170,7 @@ rdp_roc <- function(n, mu_s, R, crit, show_plots=F){
     zroc <- plot_roc(dat, ztrans=T, title="DP zROC")
     all_plots <- (roc|zroc)+
       plot_annotation(title="Dual Process ROC Plots",
-                      theme=theme(plot.title = element_text(hjust=0.5,size=18)))
+                      theme=theme(plot.title=element_text(hjust=0.5,size=18)))
     return(list(dat, all_plots))
   }else{
     return(dat)
