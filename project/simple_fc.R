@@ -8,10 +8,13 @@ rm(list=ls())
 # libraries
 library(here)
 library(ggplot2)
+library(dplyr)
+library(ggsci)
 library(purrr)
 library(stringr)
 
 # source simple functions
+source(here("project","murdock_stim.R"))
 source(here("project","simple.R"))
 
 # function to get items
