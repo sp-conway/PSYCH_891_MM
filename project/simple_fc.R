@@ -226,7 +226,7 @@ prim_rec_distSim <- prim_rec %>%
   distinct(type,comparison_option,test_set,sim,log_dist,test_items) %>%
   mutate(focal=case_when(
     type=="primacy"~1,
-    type=="recency"~2
+    type=="recency"~10
   ))
 
 prim_rec_dist_sim_pl <- ggplot(prim_rec_distSim,aes(comparison_option,sim))+
